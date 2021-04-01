@@ -122,17 +122,7 @@ public class Guess {
         System.out.println("Overall results:");
         System.out.println("total games = " + numberOfGames);
         System.out.println("total guesses = " + totalGuesses);
-        System.out.println("guesses/game = " + roundTo1Decimal((double) totalGuesses / numberOfGames));
+        System.out.printf("guesses/game = %.1f%n", ((double) totalGuesses / numberOfGames));
         System.out.println("best game = " + bestGame);
-    }
-
-    /* @fn roundTo1Decimal(num)
-     * Rounds real number to a single decimal place.
-     *
-     * @param num - any real number
-     * @return rounded number
-     */
-    public static double roundTo1Decimal(double num) {
-        return Math.round(num * 10.0) / 10.0;
     }
 }
