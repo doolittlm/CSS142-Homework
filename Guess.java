@@ -1,9 +1,11 @@
+package com.guess;
+
 import java.util.*;
 
 /* Stephanie Liu
  * Homework 5
  * Number guessing game that gives hints of higher or lower and reports stats at the end.
- * The correct number can be 1 - MAX_NUMBER
+ * The correct number can be [1, MAX_NUMBER]
  *
  * At a minimum, program should have the following methods:
  * a method that introduces the game to the user
@@ -24,19 +26,19 @@ public class Guess {
         introduction();
         Scanner console = new Scanner(System.in);
         int numberOfGames = 0;
-        int guesses = 0;
+        int guesses;
         int totalGuesses = 0;
-        int bestGame = -1;
-        boolean playAgain = true;
-        while (playAgain) {
+        int bestGame = MAX_NUMBER;
+        boolean playAgain;
+        do {
             guesses = playOneGame(console);
             totalGuesses += guesses;
-            if (bestGame == -1 || bestGame > guesses) {
+            if (bestGame > guesses) {
                 bestGame = guesses;
             }
             numberOfGames++;
             playAgain = playAgainChoice(console);
-        }
+        } while (playAgain);
         reportGameStats(numberOfGames, totalGuesses, bestGame);
     }
 
@@ -56,25 +58,24 @@ public class Guess {
     /* @fn playOneGame(Scanner console)
      * Plays one round of guessing game where player attempts to guess the right number.
      *
-     * @param[in] - object Scanner console allows user input
-     * @param[in/out] correctNumber - A pseudorandom number between 1 and MAX_NUMBER,
-     * sent to IsNumberHigherOrLower to give a hint.
-     * @param[in/out] guess - Users guess - sent to isNumberHigherOrLower to give guess hint.
-     * @param[in/out] guessCounter - increases for each guess entered, returned to calculate stats at end
+     * @param - object Scanner console allows user input
      */
     public static int playOneGame(Scanner console) {
         System.out.println("I'm thinking of a number between 1 and " + MAX_NUMBER + "...");
         Random randomObject = new Random();
+        //correctNumber - A pseudorandom number between 1 and MAX_NUMBER, sent to IsNumberHigherOrLower to give a hint.
         int correctNumber = randomObject.nextInt(MAX_NUMBER) + 1;
+        // guess - Users guess - sent to isNumberHigherOrLower to give guess hint.
         int guess = 0;
+        // guessCounter - increases for each guess entered, returned to calculate stats at end
         int guessCounter = 0;
         while (guess != correctNumber) {
             System.out.println("Your guess?");
             guess = console.nextInt();
-            isNumberHigherOrLower(guess, correctNumber);
+            console.nextLine();
             guessCounter++;
+            isNumberHigherOrLowerOrCorrect(guess, correctNumber, guessCounter);
         }
-        reportNumberOfGuesses(guessCounter);
         return guessCounter;
     }
 
@@ -84,48 +85,30 @@ public class Guess {
      *
      * @param[in] guess - the user input guess
      * @param[in] correctNumber - the pseudorandom generated number the user attempts to guess
+     * @param[in] guessCounter - if numbers are equal, then reports total guesses to get it correct.
      */
-    public static void isNumberHigherOrLower(int guess, int correctNumber) {
-        if (guess != correctNumber) {
-            if (correctNumber > guess) {
-                System.out.println("It's higher.");
-            } else {
-                System.out.println("It's lower.");
-            }
-        }
-    }
-
-    /* @fn reportNumberOfGuesses(int guessCounter)
-     * Reports how many guesses it took the user to guess the correct number.
-     *
-     * @param[in] guessCounter - the number of guesses the user made before guessing correctly.
-     */
-    public static void reportNumberOfGuesses(int guessCounter) {
-        if (guessCounter == 1) {
-            System.out.println("You got it right in 1 guess.");
+    public static void isNumberHigherOrLowerOrCorrect(int guess, int correctNumber, int guessCounter) {
+        if (correctNumber > guess) {
+            System.out.println("It's higher.");
+        } else if (correctNumber < guess) {
+            System.out.println("It's lower.");
         } else {
-            System.out.println("You got it right in " + guessCounter + " guesses.");
+            System.out.println("You got it right in " + guessCounter + " guess" + (guessCounter == 1 ? "" : "es") + ".");
         }
     }
 
     /* @fn playAgainChoice(Scanner console)
-     * Returns true if the player wants to play another game (entered y) and false if not or invalid entry.
+     * Returns true if the player wants to play another game (entered y) and false if not to end game.
      *
      * @param[in/out] Scanner console - object to collect user input
-     * @param choice - the first character of the user's input lowercase.
      */
     public static boolean playAgainChoice(Scanner console) {
         System.out.println("Do you want to play again?");
+        //choice - the first character of the user's input lowercase.
         char choice = console.next().toLowerCase().charAt(0);
+        console.nextLine();
         System.out.println();
-        if (choice == 'y') {
-            return true;
-        } else if (choice == 'n') {
-            return false;
-        } else {
-            System.out.println("Invalid selection.  Quitting game!");
-            return false;
-        }
+        return (choice == 'y');
     }
 
     /* @fn reportGameStats(int numberOfGames, int totalGuesses, int bestGame)
